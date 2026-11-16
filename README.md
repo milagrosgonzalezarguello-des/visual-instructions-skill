@@ -4,6 +4,10 @@ A skill for [Claude](https://claude.com) that designs user manuals, how-to guide
 
 Works in Spanish and English. *([Leer en español](#en-español))*
 
+![Demo: from three screenshots to a finished manual](docs/demo.gif)
+
+**See a full example:** [Cargar un gasto en Rendiciones (PDF)](examples/cargar-un-gasto/cargar-un-gasto.pdf), a manual the skill produced from eight screenshots of a fictional expenses app. The [HTML source and figures](examples/cargar-un-gasto/) are in the same folder.
+
 ## What it does
 
 The reader of a manual is in the middle of a task, glancing between the document and the real screen. The skill makes Claude write for that reader: at every moment, the next action is obvious at a glance.
@@ -52,7 +56,7 @@ cp -r visual-instructions-skill/visual-instructions ~/.claude/skills/
 
 Use `.claude/skills/` inside a project instead if you want it for that project only.
 
-**Claude.ai and the desktop app** — download this repository (Code → Download ZIP), compress the `visual-instructions` folder on its own as a ZIP, and upload it in Settings → Capabilities → Skills.
+**Claude.ai and the desktop app** — download `visual-instructions.skill` from the [latest release](https://github.com/milagrosgonzalezarguello-des/visual-instructions-skill/releases/latest) and upload it in Settings → Capabilities → Skills.
 
 ## Requirements
 
@@ -70,7 +74,9 @@ Una skill para Claude que diseña manuales de usuario, instructivos, tutoriales 
 
 **Instalación en Claude Code:** copie la carpeta `visual-instructions` dentro de `~/.claude/skills/`.
 
-**Instalación en Claude.ai o la app de escritorio:** descargue el repositorio (Code → Download ZIP), comprima solo la carpeta `visual-instructions` como ZIP y súbala en Configuración → Capacidades → Skills.
+**Instalación en Claude.ai o la app de escritorio:** descargue `visual-instructions.skill` desde la [última versión](https://github.com/milagrosgonzalezarguello-des/visual-instructions-skill/releases/latest) y súbalo en Configuración → Capacidades → Skills.
+
+**Ejemplo completo:** [Cargar un gasto en Rendiciones (PDF)](examples/cargar-un-gasto/cargar-un-gasto.pdf).
 
 ## License
 

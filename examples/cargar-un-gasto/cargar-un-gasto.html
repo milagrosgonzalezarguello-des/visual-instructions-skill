@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cargar un gasto en Rendiciones</title>
+<style>
+:root{
+  --ink:#1b2433; --muted:#5b6678; --line:#d5dce6; --bg:#ffffff; --soft:#f3f6fa;
+  --brand:#002c7a;            /* titles, step numbers */
+  --mark:#e23348;             /* reserved: rectangles, arrows, Importante */
+  --tip:#b7791f; --tip-bg:#fff8e6; --note:#1d5fa8; --note-bg:#eaf4ff;
+  --imp-bg:#fdecee; --fix:#3d4a5f; --fix-bg:#eef1f6; --see:#1a7f4b; --see-bg:#e9f7ef;
+}
+*{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;line-height:1.6}
+main{max-width:980px;margin:0 auto;padding:32px 16px 64px}
+a{color:var(--brand)}
+
+/* hierarchy: each level looks different, the same level looks the same */
+h1{font-size:2.4rem;line-height:1.2;margin:0 0 .3em;color:var(--brand)}
+.chapter>h2{font-size:1.9rem;line-height:1.25;margin:2.2em 0 .4em;color:var(--brand);border-bottom:3px solid var(--brand);padding-bottom:.25em}
+.chapter>h2 .num{display:inline-block;min-width:1.6em;font-weight:800}
+.sec>h3{font-size:1.4rem;line-height:1.3;margin:2em 0 .5em;color:var(--brand);break-after:avoid}
+.sec>h3 .id{display:inline-block;background:var(--brand);color:#fff;border-radius:8px;padding:.05em .5em;margin-right:.5em;font-size:.85em}
+h4{font-size:1.1rem;margin:1.6em 0 .4em;color:var(--brand);break-after:avoid}
+p{margin:.5em 0}
+.intro{color:var(--muted);font-size:1.05rem}
+.ui{font-weight:700;color:var(--brand)}              /* names of buttons, menus, fields: exactly as on screen */
+
+/* cover and contents */
+.cover{padding:18vh 0 10vh;border-bottom:1px solid var(--line)}
+.cover .for{color:var(--muted);font-size:1.15rem}
+.toc ol{list-style:none;padding:0;margin:.5em 0}
+.toc>ol>li{margin:.9em 0;font-weight:700}
+.toc ol ol{padding-left:1.4em;font-weight:400}
+.toc a{text-decoration:none}
+.toc a:hover{text-decoration:underline}
+.back{position:fixed;right:16px;bottom:16px;background:var(--brand);color:#fff;border-radius:999px;padding:.45em .95em;text-decoration:none;font-size:.9rem}
+
+/* steps: actions are numbered */
+ol.steps{list-style:none;counter-reset:step;padding:0;margin:1em 0}
+ol.steps>li{counter-increment:step;position:relative;padding:0 0 1.4em 3rem;break-inside:avoid}
+ol.steps>li::before{content:counter(step);position:absolute;left:0;top:-.05em;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:grid;place-items:center}
+ol.steps>li>p:first-child{font-size:1.1rem;margin-top:.1em}
+ol.sub{list-style:lower-alpha;padding-left:1.4em;margin:.4em 0}   /* sub-steps use letters, never numbers */
+
+/* what the reader will see: not numbered, different look, followed by a figure that shows it */
+.see{display:flex;gap:.6em;align-items:flex-start;background:var(--see-bg);border-left:4px solid var(--see);border-radius:8px;padding:.5em .8em;margin:.6em 0}
+.see::before{content:"Verá:";font-weight:700;color:var(--see);white-space:nowrap}
+
+/* screenshots: frame + shadow so they never blend with the instructions */
+figure.shot{margin:.9em 0 1.2em;break-inside:avoid}
+figure.shot img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,27,77,.18)}
+figure.shot.bare img{border:0;box-shadow:none;border-radius:0}   /* for figures drawn by annotate.py with cards: they bring their own frame */
+figure.shot figcaption{color:var(--muted);font-size:.9rem;text-align:center;margin-top:.6em}
+
+/* callouts: four kinds, each with its icon */
+.callout{display:grid;grid-template-columns:auto 1fr;gap:.2em .8em;border-radius:10px;padding:.8em 1em;margin:1em 0;break-inside:avoid}
+.callout svg{width:1.6rem;height:1.6rem;grid-row:1 / span 2;margin-top:.1em}
+.callout b.t{font-size:1rem}
+.callout .b{grid-column:2}
+.callout ul{margin:.2em 0;padding-left:1.2em}
+.callout p{margin:.2em 0}
+.imp{background:var(--imp-bg);border:1px solid #f3b9c1}.imp b.t,.imp svg{color:#b01e33}
+.tip{background:var(--tip-bg);border:1px solid #f0d99a}.tip b.t,.tip svg{color:var(--tip)}
+.note{background:var(--note-bg);border:1px solid #b0d2f5}.note b.t,.note svg{color:var(--note)}
+.fix{background:var(--fix-bg);border:1px solid var(--line)}.fix b.t,.fix svg{color:var(--fix)}
+.fix dl{margin:.3em 0 0;display:grid;grid-template-columns:minmax(9em,38%) 1fr}
+.fix dt,.fix dd{margin:0;padding:.5em 0;border-top:1px solid var(--line)}
+.fix dt{font-weight:700;padding-right:1em}
+
+/* tables for anything with two dimensions */
+table.t{border-collapse:collapse;width:100%;margin:1em 0;break-inside:avoid}
+table.t th{background:var(--brand);color:#fff;text-align:left;padding:.5em .7em}
+table.t td{padding:.5em .7em;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td:first-child{font-weight:700;color:var(--brand)}
+
+@media (max-width:600px){h1{font-size:1.9rem}.chapter>h2{font-size:1.5rem}.fix dl{grid-template-columns:1fr}.fix dd{border-top:0;padding-top:0}}
+@media print{
+  @page{size:A4;margin:18mm 16mm 20mm}
+  main{max-width:none;padding:0}
+  .back{display:none}
+  .cover,.toc{break-after:page}
+  .chapter{break-before:page}
+  h2,h3,h4{break-after:avoid}
+  .keep{break-inside:avoid}            /* wrap a note and the figure it introduces */
+}
+ol.steps>li>figure.shot{margin-left:-3rem}          /* figures use the full width so labels stay readable */
+ol.steps>li>.callout{margin-top:.2em}
+.cover{padding:56px 0 28px}
+.toc h2{color:var(--brand);font-size:1.4rem;margin:1.6em 0 .2em}
+@media print{ol.steps>li::before{top:0}.cover{break-after:auto}}
+</style>
+</head>
+<body>
+<main>
+
+<header class="cover">
+  <h1>Cargar un gasto en Rendiciones</h1>
+  <p class="for">Para empleados que rinden gastos · Noviembre de 2026</p>
+</header>
+
+<nav class="toc" id="indice">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#s1">1 · Completar los datos</a></li>
+    <li><a href="#s2">2 · Adjuntar el comprobante</a></li>
+    <li><a href="#s3">3 · Revisar y enviar</a></li>
+  </ol>
+</nav>
+
+<article class="chapter">
+
+  <section class="sec" id="s1">
+    <h3><span class="id">1</span>Completar los datos</h3>
+    <ol class="steps">
+      <li>
+        <p>En <span class="ui">Mis gastos</span>, seleccione <span class="ui">NUEVO GASTO</span>.</p>
+        <figure class="shot bare"><img src="f1-nuevo-gasto.png" width="1328" height="318" alt="Pantalla Mis gastos con el botón NUEVO GASTO marcado"></figure>
+      </li>
+      <li>
+        <p>En <span class="ui">Monto</span>, escriba el importe del gasto.</p>
+        <figure class="shot bare"><img src="f2-monto.png" width="1328" height="332" alt="Pantalla Nuevo gasto vacía con el campo Monto marcado"></figure>
+      </li>
+      <li>
+        <p>En <span class="ui">Categoría</span>, seleccione la categoría en la lista.</p>
+        <figure class="shot bare"><img src="f3-categoria.png" width="1328" height="332" alt="Pantalla Nuevo gasto con el monto escrito y la lista Categoría marcada"></figure>
+      </li>
+      <li>
+        <p>En <span class="ui">Fecha</span>, escriba la fecha del gasto con el formato dd/mm/aaaa.</p>
+        <figure class="shot bare"><img src="f4-fecha.png" width="1328" height="332" alt="Pantalla Nuevo gasto con monto y categoría completos y el campo Fecha marcado"></figure>
+      </li>
+    </ol>
+  </section>
+
+  <section class="sec" id="s2">
+    <h3><span class="id">2</span>Adjuntar el comprobante</h3>
+    <div class="callout note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.3"/></svg>
+      <b class="t">Nota</b>
+      <div class="b"><ul>
+        <li>El archivo puede ser JPG, PNG o PDF, de hasta 5 MB.</li>
+        <li>En lugar de arrastrar la foto, puede seleccionar un archivo.</li>
+      </ul></div>
+    </div>
+    <ol class="steps">
+      <li>
+        <p>En <span class="ui">Comprobante</span>, arrastre la foto del comprobante.</p>
+        <figure class="shot bare"><img src="f5-comprobante.png" width="1328" height="596" alt="Pantalla Nuevo gasto con los tres datos completos y el recuadro Comprobante marcado"></figure>
+      </li>
+      <li>
+        <p>Seleccione <span class="ui">CONTINUAR</span>.</p>
+        <figure class="shot bare"><img src="f6-continuar.png" width="1328" height="808" alt="Pantalla Nuevo gasto con el comprobante adjunto y el botón CONTINUAR marcado"></figure>
+      </li>
+    </ol>
+  </section>
+
+  <section class="sec" id="s3">
+    <h3><span class="id">3</span>Revisar y enviar</h3>
+    <ol class="steps">
+      <li>
+        <p>En <span class="ui">Revisar y enviar</span>, compruebe los datos.</p>
+        <figure class="shot bare"><img src="f7-revisar.png" width="1328" height="560" alt="Pantalla Revisar y enviar con los datos del gasto marcados"></figure>
+        <div class="callout fix">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L11 20a2.1 2.1 0 0 1-3-3l8.500-8.500z" transform="translate(-1 -1)"/><path d="M14 7l3-3 3 3-3 3"/></svg>
+          <b class="t">Si ve algo distinto</b>
+          <div class="b"><dl>
+            <dt>Un dato está mal</dt><dd>Seleccione <span class="ui">VOLVER</span> y corrija el dato.</dd>
+          </dl></div>
+        </div>
+      </li>
+      <li>
+        <p>Seleccione <span class="ui">ENVIAR GASTO</span>.</p>
+        <figure class="shot bare"><img src="f8-enviar.png" width="1328" height="808" alt="Pantalla Revisar y enviar con el botón ENVIAR GASTO marcado"></figure>
+        <div class="see"><span>el aviso <span class="ui">Gasto enviado</span> en <span class="ui">Mis gastos</span>.</span></div>
+        <figure class="shot bare"><img src="f9-enviado.png" width="1328" height="420" alt="Pantalla Mis gastos con el aviso Gasto enviado marcado"></figure>
+      </li>
+    </ol>
+    <div class="callout note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.3"/></svg>
+      <b class="t">Nota</b>
+      <div class="b"><p>El gasto queda en estado Pendiente de aprobación. Rendiciones le avisa por correo cuando su aprobador lo revisa.</p></div>
+    </div>
+  </section>
+</article>
+
+<a class="back" href="#indice">↑ Índice</a>
+</main>
+</body>
+</html>
