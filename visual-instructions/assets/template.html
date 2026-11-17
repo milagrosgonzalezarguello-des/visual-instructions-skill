@@ -107,6 +107,7 @@ table.t td:first-child{font-weight:700;color:var(--brand)}
   @page{size:A4;margin:18mm 16mm 20mm}
   main{max-width:none;padding:0}
   .back{display:none}
+  ol.steps>li::before{top:0}   /* a negative top lets the page break cut the number */
   .cover,.toc{break-after:page}
   .chapter{break-before:page}
   h2,h3,h4{break-after:avoid}
