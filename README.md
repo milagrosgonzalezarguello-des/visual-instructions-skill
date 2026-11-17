@@ -78,6 +78,10 @@ Una skill para Claude que diseña manuales de usuario, instructivos, tutoriales 
 
 **Ejemplo completo:** [Cargar un gasto en Rendiciones (PDF)](examples/cargar-un-gasto/cargar-un-gasto.pdf).
 
+## More skills
+
+- [ai-states](https://github.com/milagrosgonzalezarguello-des/ai-states-skill): designs everything an AI feature or agent shows besides the good answer.
+
 ## License
 
 [MIT](LICENSE)
